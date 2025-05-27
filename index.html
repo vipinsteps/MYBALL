@@ -1,0 +1,1060 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>RUN_BALL - Ceratizit Calculator</title>
+  <link rel="manifest" href="manifest.json">
+  <script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("service-worker.js");
+    }
+  </script>
+</head>
+<body>
+  <h1>RUN_BALL Calculator</h1>
+  <label>Material</label>
+  <select id="material"><option value="ALUMINIUM">ALUMINIUM</option><option value="COPPER">COPPER</option><option value="PREHARDEN(40HRC) ">PREHARDEN(40HRC) </option><option value="SKD 11(60HRC) ">SKD 11(60HRC) </option><option value="SKD 61(48HRC)">SKD 61(48HRC)</option><option value="SUS QUENCHING(52HRC)">SUS QUENCHING(52HRC)</option></select>
+  <label>Operation</label>
+  <select id="operation"><option value="ROUGHING">Roughing</option></select>
+  <label>Cutter Dia</label>
+  <select id="cutter"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="6">6</option><option value="8">8</option><option value="10">10</option><option value="12">12</option></select>
+  <label>L/D Ratio</label>
+  <select id="ld"><option value="3">3</option><option value="4">4</option><option value="5">5</option></select>
+  <button onclick="calculate()">Calculate</button>
+  <div id="output" style="margin-top:20px;"></div>
+
+  <script>
+    const data = {
+  "PREHARDEN(40HRC)ROUGHING13": {
+    "dia": 1,
+    "ap": 0.08,
+    "ae": 0.54,
+    "rpm": 12000,
+    "feed": 480
+  },
+  "PREHARDEN(40HRC)ROUGHING23": {
+    "dia": 2,
+    "ap": 0.16,
+    "ae": 1.08,
+    "rpm": 12000,
+    "feed": 1080
+  },
+  "PREHARDEN(40HRC)ROUGHING33": {
+    "dia": 3,
+    "ap": 0.3,
+    "ae": 1.8,
+    "rpm": 12000,
+    "feed": 1920
+  },
+  "PREHARDEN(40HRC)ROUGHING43": {
+    "dia": 4,
+    "ap": 0.4,
+    "ae": 2.4,
+    "rpm": 12000,
+    "feed": 2640
+  },
+  "PREHARDEN(40HRC)ROUGHING63": {
+    "dia": 6,
+    "ap": 0.6,
+    "ae": 3.6,
+    "rpm": 12000,
+    "feed": 3600
+  },
+  "PREHARDEN(40HRC)ROUGHING83": {
+    "dia": 8,
+    "ap": 0.8,
+    "ae": 4.8,
+    "rpm": 9698,
+    "feed": 3103
+  },
+  "PREHARDEN(40HRC)ROUGHING103": {
+    "dia": 10,
+    "ap": 1.0,
+    "ae": 6.0,
+    "rpm": 7559,
+    "feed": 2570
+  },
+  "PREHARDEN(40HRC)ROUGHING123": {
+    "dia": 12,
+    "ap": 1.2,
+    "ae": 7.2,
+    "rpm": 6134,
+    "feed": 2208
+  },
+  "PREHARDEN(40HRC)ROUGHING14": {
+    "dia": 1,
+    "ap": 0.05,
+    "ae": 0.4,
+    "rpm": 12000,
+    "feed": 480
+  },
+  "PREHARDEN(40HRC)ROUGHING24": {
+    "dia": 2,
+    "ap": 0.1,
+    "ae": 0.9,
+    "rpm": 12000,
+    "feed": 960
+  },
+  "PREHARDEN(40HRC)ROUGHING34": {
+    "dia": 3,
+    "ap": 0.18,
+    "ae": 1.5,
+    "rpm": 12000,
+    "feed": 1800
+  },
+  "PREHARDEN(40HRC)ROUGHING44": {
+    "dia": 4,
+    "ap": 0.24,
+    "ae": 2.0,
+    "rpm": 12000,
+    "feed": 2400
+  },
+  "PREHARDEN(40HRC)ROUGHING64": {
+    "dia": 6,
+    "ap": 0.36,
+    "ae": 3.0,
+    "rpm": 12000,
+    "feed": 2880
+  },
+  "PREHARDEN(40HRC)ROUGHING84": {
+    "dia": 8,
+    "ap": 0.48,
+    "ae": 4.0,
+    "rpm": 8877,
+    "feed": 2663
+  },
+  "PREHARDEN(40HRC)ROUGHING104": {
+    "dia": 10,
+    "ap": 0.6,
+    "ae": 5.0,
+    "rpm": 6856,
+    "feed": 2193
+  },
+  "PREHARDEN(40HRC)ROUGHING124": {
+    "dia": 12,
+    "ap": 0.72,
+    "ae": 6.0,
+    "rpm": 5509,
+    "feed": 1983
+  },
+  "PREHARDEN(40HRC)ROUGHING15": {
+    "dia": 1,
+    "ap": 0.03,
+    "ae": 0.35,
+    "rpm": 12000,
+    "feed": 360
+  },
+  "PREHARDEN(40HRC)ROUGHING25": {
+    "dia": 2,
+    "ap": 0.06,
+    "ae": 0.7,
+    "rpm": 12000,
+    "feed": 912
+  },
+  "PREHARDEN(40HRC)ROUGHING35": {
+    "dia": 3,
+    "ap": 0.09,
+    "ae": 1.05,
+    "rpm": 12000,
+    "feed": 1320
+  },
+  "PREHARDEN(40HRC)ROUGHING45": {
+    "dia": 4,
+    "ap": 0.12,
+    "ae": 1.4,
+    "rpm": 11057,
+    "feed": 1547
+  },
+  "PREHARDEN(40HRC)ROUGHING65": {
+    "dia": 6,
+    "ap": 0.18,
+    "ae": 2.1,
+    "rpm": 8377,
+    "feed": 1675
+  },
+  "PREHARDEN(40HRC)ROUGHING85": {
+    "dia": 8,
+    "ap": 0.24,
+    "ae": 2.8,
+    "rpm": 6115,
+    "feed": 1467
+  },
+  "PREHARDEN(40HRC)ROUGHING105": {
+    "dia": 10,
+    "ap": 0.3,
+    "ae": 3.5,
+    "rpm": 4758,
+    "feed": 1237
+  },
+  "PREHARDEN(40HRC)ROUGHING125": {
+    "dia": 12,
+    "ap": 0.36,
+    "ae": 4.2,
+    "rpm": 3853,
+    "feed": 1078
+  },
+  "SKD 61(48HRC)ROUGHING13": {
+    "dia": 1,
+    "ap": 0.03,
+    "ae": 0.4,
+    "rpm": 12000,
+    "feed": 480
+  },
+  "SKD 61(48HRC)ROUGHING23": {
+    "dia": 2,
+    "ap": 0.1,
+    "ae": 0.9,
+    "rpm": 12000,
+    "feed": 960
+  },
+  "SKD 61(48HRC)ROUGHING33": {
+    "dia": 3,
+    "ap": 0.15,
+    "ae": 1.5,
+    "rpm": 12000,
+    "feed": 1560
+  },
+  "SKD 61(48HRC)ROUGHING43": {
+    "dia": 4,
+    "ap": 0.2,
+    "ae": 2.0,
+    "rpm": 12000,
+    "feed": 2160
+  },
+  "SKD 61(48HRC)ROUGHING63": {
+    "dia": 6,
+    "ap": 0.3,
+    "ae": 3.0,
+    "rpm": 10168,
+    "feed": 2440
+  },
+  "SKD 61(48HRC)ROUGHING83": {
+    "dia": 8,
+    "ap": 0.4,
+    "ae": 4.0,
+    "rpm": 7377,
+    "feed": 1881
+  },
+  "SKD 61(48HRC)ROUGHING103": {
+    "dia": 10,
+    "ap": 0.5,
+    "ae": 5.0,
+    "rpm": 5703,
+    "feed": 1539
+  },
+  "SKD 61(48HRC)ROUGHING123": {
+    "dia": 12,
+    "ap": 0.6,
+    "ae": 6.0,
+    "rpm": 486,
+    "feed": 1307
+  },
+  "SKD 61(48HRC)ROUGHING14": {
+    "dia": 1,
+    "ap": 0.03,
+    "ae": 0.35,
+    "rpm": 12000,
+    "feed": 480
+  },
+  "SKD 61(48HRC)ROUGHING24": {
+    "dia": 2,
+    "ap": 0.06,
+    "ae": 0.7,
+    "rpm": 12000,
+    "feed": 888
+  },
+  "SKD 61(48HRC)ROUGHING34": {
+    "dia": 3,
+    "ap": 0.105,
+    "ae": 1.35,
+    "rpm": 12000,
+    "feed": 1320
+  },
+  "SKD 61(48HRC)ROUGHING44": {
+    "dia": 4,
+    "ap": 0.16,
+    "ae": 1.8,
+    "rpm": 10999,
+    "feed": 1539
+  },
+  "SKD 61(48HRC)ROUGHING64": {
+    "dia": 6,
+    "ap": 0.3,
+    "ae": 2.7,
+    "rpm": 7957,
+    "feed": 1591
+  },
+  "SKD 61(48HRC)ROUGHING84": {
+    "dia": 8,
+    "ap": 0.4,
+    "ae": 3.6,
+    "rpm": 5901,
+    "feed": 1504
+  },
+  "SKD 61(48HRC)ROUGHING104": {
+    "dia": 10,
+    "ap": 0.5,
+    "ae": 4.5,
+    "rpm": 4668,
+    "feed": 1260
+  },
+  "SKD 61(48HRC)ROUGHING124": {
+    "dia": 12,
+    "ap": 0.6,
+    "ae": 5.4,
+    "rpm": 3846,
+    "feed": 1096
+  },
+  "SKD 61(48HRC)ROUGHING15": {
+    "dia": 1,
+    "ap": 0.03,
+    "ae": 0.35,
+    "rpm": 12000,
+    "feed": 312
+  },
+  "SKD 61(48HRC)ROUGHING25": {
+    "dia": 2,
+    "ap": 0.06,
+    "ae": 0.7,
+    "rpm": 12000,
+    "feed": 840
+  },
+  "SKD 61(48HRC)ROUGHING35": {
+    "dia": 3,
+    "ap": 0.09,
+    "ae": 1.05,
+    "rpm": 9493,
+    "feed": 1044
+  },
+  "SKD 61(48HRC)ROUGHING45": {
+    "dia": 4,
+    "ap": 0.12,
+    "ae": 1.4,
+    "rpm": 7539,
+    "feed": 1055
+  },
+  "SKD 61(48HRC)ROUGHING65": {
+    "dia": 6,
+    "ap": 0.18,
+    "ae": 2.1,
+    "rpm": 5584,
+    "feed": 1116
+  },
+  "SKD 61(48HRC)ROUGHING85": {
+    "dia": 8,
+    "ap": 0.24,
+    "ae": 2.8,
+    "rpm": 4020,
+    "feed": 884
+  },
+  "SKD 61(48HRC)ROUGHING105": {
+    "dia": 10,
+    "ap": 0.3,
+    "ae": 3.5,
+    "rpm": 3082,
+    "feed": 678
+  },
+  "SKD 61(48HRC)ROUGHING125": {
+    "dia": 12,
+    "ap": 0.36,
+    "ae": 4.2,
+    "rpm": 247,
+    "feed": 589
+  },
+  "SUS QUENCHING(52HRC)ROUGHING13": {
+    "dia": 1,
+    "ap": 0.03,
+    "ae": 0.4,
+    "rpm": 12000,
+    "feed": 480
+  },
+  "SUS QUENCHING(52HRC)ROUGHING23": {
+    "dia": 2,
+    "ap": 0.1,
+    "ae": 0.9,
+    "rpm": 12000,
+    "feed": 960
+  },
+  "SUS QUENCHING(52HRC)ROUGHING33": {
+    "dia": 3,
+    "ap": 0.15,
+    "ae": 1.5,
+    "rpm": 12000,
+    "feed": 1560
+  },
+  "SUS QUENCHING(52HRC)ROUGHING43": {
+    "dia": 4,
+    "ap": 0.2,
+    "ae": 2.0,
+    "rpm": 12000,
+    "feed": 2160
+  },
+  "SUS QUENCHING(52HRC)ROUGHING63": {
+    "dia": 6,
+    "ap": 0.3,
+    "ae": 3.0,
+    "rpm": 10168,
+    "feed": 2440
+  },
+  "SUS QUENCHING(52HRC)ROUGHING83": {
+    "dia": 8,
+    "ap": 0.4,
+    "ae": 4.0,
+    "rpm": 7377,
+    "feed": 1881
+  },
+  "SUS QUENCHING(52HRC)ROUGHING103": {
+    "dia": 10,
+    "ap": 0.5,
+    "ae": 5.0,
+    "rpm": 5703,
+    "feed": 1539
+  },
+  "SUS QUENCHING(52HRC)ROUGHING123": {
+    "dia": 12,
+    "ap": 0.6,
+    "ae": 6.0,
+    "rpm": 486,
+    "feed": 1307
+  },
+  "SUS QUENCHING(52HRC)ROUGHING14": {
+    "dia": 1,
+    "ap": 0.03,
+    "ae": 0.35,
+    "rpm": 12000,
+    "feed": 480
+  },
+  "SUS QUENCHING(52HRC)ROUGHING24": {
+    "dia": 2,
+    "ap": 0.06,
+    "ae": 0.7,
+    "rpm": 12000,
+    "feed": 888
+  },
+  "SUS QUENCHING(52HRC)ROUGHING34": {
+    "dia": 3,
+    "ap": 0.105,
+    "ae": 1.35,
+    "rpm": 12000,
+    "feed": 1320
+  },
+  "SUS QUENCHING(52HRC)ROUGHING44": {
+    "dia": 4,
+    "ap": 0.16,
+    "ae": 1.8,
+    "rpm": 10999,
+    "feed": 1539
+  },
+  "SUS QUENCHING(52HRC)ROUGHING64": {
+    "dia": 6,
+    "ap": 0.3,
+    "ae": 2.7,
+    "rpm": 7957,
+    "feed": 1591
+  },
+  "SUS QUENCHING(52HRC)ROUGHING84": {
+    "dia": 8,
+    "ap": 0.4,
+    "ae": 3.6,
+    "rpm": 5901,
+    "feed": 1504
+  },
+  "SUS QUENCHING(52HRC)ROUGHING104": {
+    "dia": 10,
+    "ap": 0.5,
+    "ae": 4.5,
+    "rpm": 4668,
+    "feed": 1260
+  },
+  "SUS QUENCHING(52HRC)ROUGHING124": {
+    "dia": 12,
+    "ap": 0.6,
+    "ae": 5.4,
+    "rpm": 3846,
+    "feed": 1096
+  },
+  "SUS QUENCHING(52HRC)ROUGHING15": {
+    "dia": 1,
+    "ap": 0.03,
+    "ae": 0.35,
+    "rpm": 12000,
+    "feed": 312
+  },
+  "SUS QUENCHING(52HRC)ROUGHING25": {
+    "dia": 2,
+    "ap": 0.06,
+    "ae": 0.7,
+    "rpm": 12000,
+    "feed": 840
+  },
+  "SUS QUENCHING(52HRC)ROUGHING35": {
+    "dia": 3,
+    "ap": 0.09,
+    "ae": 1.05,
+    "rpm": 9493,
+    "feed": 1044
+  },
+  "SUS QUENCHING(52HRC)ROUGHING45": {
+    "dia": 4,
+    "ap": 0.12,
+    "ae": 1.4,
+    "rpm": 7539,
+    "feed": 1055
+  },
+  "SUS QUENCHING(52HRC)ROUGHING65": {
+    "dia": 6,
+    "ap": 0.18,
+    "ae": 2.1,
+    "rpm": 5584,
+    "feed": 1116
+  },
+  "SUS QUENCHING(52HRC)ROUGHING85": {
+    "dia": 8,
+    "ap": 0.24,
+    "ae": 2.8,
+    "rpm": 4020,
+    "feed": 884
+  },
+  "SUS QUENCHING(52HRC)ROUGHING105": {
+    "dia": 10,
+    "ap": 0.3,
+    "ae": 3.5,
+    "rpm": 3082,
+    "feed": 678
+  },
+  "SUS QUENCHING(52HRC)ROUGHING125": {
+    "dia": 12,
+    "ap": 0.36,
+    "ae": 4.2,
+    "rpm": 247,
+    "feed": 589
+  },
+  "SKD 11(60HRC)ROUGHING13": {
+    "dia": 1,
+    "ap": 0.03,
+    "ae": 0.35,
+    "rpm": 12000,
+    "feed": 480
+  },
+  "SKD 11(60HRC)ROUGHING23": {
+    "dia": 2,
+    "ap": 0.06,
+    "ae": 0.7,
+    "rpm": 12000,
+    "feed": 960
+  },
+  "SKD 11(60HRC)ROUGHING33": {
+    "dia": 3,
+    "ap": 0.09,
+    "ae": 1.05,
+    "rpm": 12000,
+    "feed": 1320
+  },
+  "SKD 11(60HRC)ROUGHING43": {
+    "dia": 4,
+    "ap": 0.12,
+    "ae": 1.4,
+    "rpm": 10722,
+    "feed": 1501
+  },
+  "SKD 11(60HRC)ROUGHING63": {
+    "dia": 6,
+    "ap": 0.18,
+    "ae": 2.1,
+    "rpm": 8377,
+    "feed": 1675
+  },
+  "SKD 11(60HRC)ROUGHING83": {
+    "dia": 8,
+    "ap": 0.24,
+    "ae": 2.8,
+    "rpm": 5863,
+    "feed": 1289
+  },
+  "SKD 11(60HRC)ROUGHING103": {
+    "dia": 10,
+    "ap": 0.3,
+    "ae": 3.5,
+    "rpm": 4356,
+    "feed": 104
+  },
+  "SKD 11(60HRC)ROUGHING123": {
+    "dia": 12,
+    "ap": 0.3,
+    "ae": 3.5,
+    "rpm": 3955,
+    "feed": 949
+  },
+  "SKD 11(60HRC)ROUGHING14": {
+    "dia": 1,
+    "ap": 0.03,
+    "ae": 0.35,
+    "rpm": 12000,
+    "feed": 360
+  },
+  "SKD 11(60HRC)ROUGHING24": {
+    "dia": 2,
+    "ap": 0.06,
+    "ae": 0.7,
+    "rpm": 12000,
+    "feed": 840
+  },
+  "SKD 11(60HRC)ROUGHING34": {
+    "dia": 3,
+    "ap": 0.09,
+    "ae": 1.05,
+    "rpm": 10610,
+    "feed": 1061
+  },
+  "SKD 11(60HRC)ROUGHING44": {
+    "dia": 4,
+    "ap": 0.12,
+    "ae": 1.4,
+    "rpm": 8377,
+    "feed": 1005
+  },
+  "SKD 11(60HRC)ROUGHING64": {
+    "dia": 6,
+    "ap": 0.18,
+    "ae": 2.1,
+    "rpm": 6143,
+    "feed": 982
+  },
+  "SKD 11(60HRC)ROUGHING84": {
+    "dia": 8,
+    "ap": 0.24,
+    "ae": 2.8,
+    "rpm": 4397,
+    "feed": 791
+  },
+  "SKD 11(60HRC)ROUGHING104": {
+    "dia": 10,
+    "ap": 0.3,
+    "ae": 3.5,
+    "rpm": 3350,
+    "feed": 670
+  },
+  "SKD 11(60HRC)ROUGHING124": {
+    "dia": 12,
+    "ap": 0.3,
+    "ae": 3.5,
+    "rpm": 3042,
+    "feed": 608
+  },
+  "SKD 11(60HRC)ROUGHING15": {
+    "dia": 1,
+    "ap": 0.02,
+    "ae": 0.35,
+    "rpm": 12000,
+    "feed": 312
+  },
+  "SKD 11(60HRC)ROUGHING25": {
+    "dia": 2,
+    "ap": 0.04,
+    "ae": 0.7,
+    "rpm": 9746,
+    "feed": 506
+  },
+  "SKD 11(60HRC)ROUGHING35": {
+    "dia": 3,
+    "ap": 0.06,
+    "ae": 1.05,
+    "rpm": 6903,
+    "feed": 441
+  },
+  "SKD 11(60HRC)ROUGHING45": {
+    "dia": 4,
+    "ap": 0.08,
+    "ae": 1.4,
+    "rpm": 5482,
+    "feed": 416
+  },
+  "SKD 11(60HRC)ROUGHING65": {
+    "dia": 6,
+    "ap": 0.12,
+    "ae": 2.1,
+    "rpm": 4060,
+    "feed": 406
+  },
+  "SKD 11(60HRC)ROUGHING85": {
+    "dia": 8,
+    "ap": 0.16,
+    "ae": 2.8,
+    "rpm": 2944,
+    "feed": 353
+  },
+  "SKD 11(60HRC)ROUGHING105": {
+    "dia": 10,
+    "ap": 0.2,
+    "ae": 3.5,
+    "rpm": 2274,
+    "feed": 272
+  },
+  "SKD 11(60HRC)ROUGHING125": {
+    "dia": 12,
+    "ap": 0.2,
+    "ae": 3.5,
+    "rpm": 2068,
+    "feed": 248
+  },
+  "COPPERROUGHING13": {
+    "dia": 1,
+    "ap": 0.1,
+    "ae": 0.6,
+    "rpm": 12000,
+    "feed": 600
+  },
+  "COPPERROUGHING23": {
+    "dia": 2,
+    "ap": 0.2,
+    "ae": 1.2,
+    "rpm": 12000,
+    "feed": 1200
+  },
+  "COPPERROUGHING33": {
+    "dia": 3,
+    "ap": 0.3,
+    "ae": 1.8,
+    "rpm": 12000,
+    "feed": 1920
+  },
+  "COPPERROUGHING43": {
+    "dia": 4,
+    "ap": 0.4,
+    "ae": 2.4,
+    "rpm": 12000,
+    "feed": 2400
+  },
+  "COPPERROUGHING63": {
+    "dia": 6,
+    "ap": 0.6,
+    "ae": 3.6,
+    "rpm": 12000,
+    "feed": 3120
+  },
+  "COPPERROUGHING83": {
+    "dia": 8,
+    "ap": 0.8,
+    "ae": 4.8,
+    "rpm": 12000,
+    "feed": 3120
+  },
+  "COPPERROUGHING103": {
+    "dia": 10,
+    "ap": 1.0,
+    "ae": 6.0,
+    "rpm": 11976,
+    "feed": 3353
+  },
+  "COPPERROUGHING123": {
+    "dia": 12,
+    "ap": 1.2,
+    "ae": 7.2,
+    "rpm": 9980,
+    "feed": 2794
+  },
+  "COPPERROUGHING14": {
+    "dia": 1,
+    "ap": 0.1,
+    "ae": 0.6,
+    "rpm": 12000,
+    "feed": 480
+  },
+  "COPPERROUGHING24": {
+    "dia": 2,
+    "ap": 0.2,
+    "ae": 1.2,
+    "rpm": 12000,
+    "feed": 960
+  },
+  "COPPERROUGHING34": {
+    "dia": 3,
+    "ap": 0.3,
+    "ae": 1.8,
+    "rpm": 12000,
+    "feed": 1440
+  },
+  "COPPERROUGHING44": {
+    "dia": 4,
+    "ap": 0.4,
+    "ae": 2.4,
+    "rpm": 12000,
+    "feed": 1920
+  },
+  "COPPERROUGHING64": {
+    "dia": 6,
+    "ap": 0.6,
+    "ae": 3.6,
+    "rpm": 12000,
+    "feed": 2400
+  },
+  "COPPERROUGHING84": {
+    "dia": 8,
+    "ap": 0.8,
+    "ae": 4.8,
+    "rpm": 12000,
+    "feed": 2400
+  },
+  "COPPERROUGHING104": {
+    "dia": 10,
+    "ap": 1.0,
+    "ae": 6.0,
+    "rpm": 11976,
+    "feed": 2395
+  },
+  "COPPERROUGHING124": {
+    "dia": 12,
+    "ap": 1.2,
+    "ae": 7.2,
+    "rpm": 9980,
+    "feed": 1996
+  },
+  "COPPERROUGHING15": {
+    "dia": 1,
+    "ap": 0.06,
+    "ae": 0.47,
+    "rpm": 12000,
+    "feed": 360
+  },
+  "COPPERROUGHING25": {
+    "dia": 2,
+    "ap": 0.12,
+    "ae": 0.95,
+    "rpm": 12000,
+    "feed": 660
+  },
+  "COPPERROUGHING35": {
+    "dia": 3,
+    "ap": 0.18,
+    "ae": 1.42,
+    "rpm": 12000,
+    "feed": 960
+  },
+  "COPPERROUGHING45": {
+    "dia": 4,
+    "ap": 0.24,
+    "ae": 1.9,
+    "rpm": 12000,
+    "feed": 1440
+  },
+  "COPPERROUGHING65": {
+    "dia": 6,
+    "ap": 0.36,
+    "ae": 2.8,
+    "rpm": 12000,
+    "feed": 2400
+  },
+  "COPPERROUGHING85": {
+    "dia": 8,
+    "ap": 0.48,
+    "ae": 3.8,
+    "rpm": 11754,
+    "feed": 2350
+  },
+  "COPPERROUGHING105": {
+    "dia": 10,
+    "ap": 0.6,
+    "ae": 4.75,
+    "rpm": 9403,
+    "feed": 1880
+  },
+  "COPPERROUGHING125": {
+    "dia": 12,
+    "ap": 0.72,
+    "ae": 5.7,
+    "rpm": 7836,
+    "feed": 1567
+  },
+  "ALUMINIUMROUGHING13": {
+    "dia": 1,
+    "ap": 0.07,
+    "ae": 0.51,
+    "rpm": 12000,
+    "feed": 1200
+  },
+  "ALUMINIUMROUGHING23": {
+    "dia": 2,
+    "ap": 0.16,
+    "ae": 1.08,
+    "rpm": 12000,
+    "feed": 1680
+  },
+  "ALUMINIUMROUGHING33": {
+    "dia": 3,
+    "ap": 0.27,
+    "ae": 1.71,
+    "rpm": 12000,
+    "feed": 2640
+  },
+  "ALUMINIUMROUGHING43": {
+    "dia": 4,
+    "ap": 0.4,
+    "ae": 2.4,
+    "rpm": 12000,
+    "feed": 3120
+  },
+  "ALUMINIUMROUGHING63": {
+    "dia": 6,
+    "ap": 0.72,
+    "ae": 3.89,
+    "rpm": 12000,
+    "feed": 3600
+  },
+  "ALUMINIUMROUGHING83": {
+    "dia": 8,
+    "ap": 1.12,
+    "ae": 5.55,
+    "rpm": 12000,
+    "feed": 3600
+  },
+  "ALUMINIUMROUGHING103": {
+    "dia": 10,
+    "ap": 1.5,
+    "ae": 7.14,
+    "rpm": 12000,
+    "feed": 3600
+  },
+  "ALUMINIUMROUGHING123": {
+    "dia": 12,
+    "ap": 1.8,
+    "ae": 8.56,
+    "rpm": 12000,
+    "feed": 3600
+  },
+  "ALUMINIUMROUGHING14": {
+    "dia": 1,
+    "ap": 0.06,
+    "ae": 0.47,
+    "rpm": 12000,
+    "feed": 1080
+  },
+  "ALUMINIUMROUGHING24": {
+    "dia": 2,
+    "ap": 0.14,
+    "ae": 1.02,
+    "rpm": 12000,
+    "feed": 1512
+  },
+  "ALUMINIUMROUGHING34": {
+    "dia": 3,
+    "ap": 0.24,
+    "ae": 1.62,
+    "rpm": 12000,
+    "feed": 2400
+  },
+  "ALUMINIUMROUGHING44": {
+    "dia": 4,
+    "ap": 0.36,
+    "ae": 2.28,
+    "rpm": 12000,
+    "feed": 2880
+  },
+  "ALUMINIUMROUGHING64": {
+    "dia": 6,
+    "ap": 0.66,
+    "ae": 3.75,
+    "rpm": 12000,
+    "feed": 3600
+  },
+  "ALUMINIUMROUGHING84": {
+    "dia": 8,
+    "ap": 1.04,
+    "ae": 5.38,
+    "rpm": 12000,
+    "feed": 3600
+  },
+  "ALUMINIUMROUGHING104": {
+    "dia": 10,
+    "ap": 1.3,
+    "ae": 6.72,
+    "rpm": 12000,
+    "feed": 3600
+  },
+  "ALUMINIUMROUGHING124": {
+    "dia": 12,
+    "ap": 1.56,
+    "ae": 8.07,
+    "rpm": 12000,
+    "feed": 3600
+  },
+  "ALUMINIUMROUGHING15": {
+    "dia": 1,
+    "ap": 0.04,
+    "ae": 0.39,
+    "rpm": 12000,
+    "feed": 720
+  },
+  "ALUMINIUMROUGHING25": {
+    "dia": 2,
+    "ap": 0.1,
+    "ae": 0.87,
+    "rpm": 12000,
+    "feed": 960
+  },
+  "ALUMINIUMROUGHING35": {
+    "dia": 3,
+    "ap": 0.18,
+    "ae": 1.42,
+    "rpm": 12000,
+    "feed": 1440
+  },
+  "ALUMINIUMROUGHING45": {
+    "dia": 4,
+    "ap": 0.28,
+    "ae": 2.04,
+    "rpm": 12000,
+    "feed": 1920
+  },
+  "ALUMINIUMROUGHING65": {
+    "dia": 6,
+    "ap": 0.54,
+    "ae": 3.43,
+    "rpm": 12000,
+    "feed": 2400
+  },
+  "ALUMINIUMROUGHING85": {
+    "dia": 8,
+    "ap": 0.8,
+    "ae": 4.8,
+    "rpm": 12000,
+    "feed": 2400
+  },
+  "ALUMINIUMROUGHING105": {
+    "dia": 10,
+    "ap": 1.0,
+    "ae": 6.0,
+    "rpm": 11140,
+    "feed": 2673
+  },
+  "ALUMINIUMROUGHING125": {
+    "dia": 12,
+    "ap": 1.2,
+    "ae": 7.2,
+    "rpm": 9284,
+    "feed": 2228
+  }
+};
+
+    function calculate() {
+      const key = document.getElementById("material").value +
+                  document.getElementById("operation").value.toUpperCase() +
+                  document.getElementById("cutter").value +
+                  document.getElementById("ld").value;
+
+      const result = data[key];
+      const output = document.getElementById("output");
+      if (result) {
+        output.innerHTML = "<p><strong>Cutter Dia:</strong> " + result.dia + "</p>" +
+                           "<p><strong>Ap:</strong> " + result.ap + "</p>" +
+                           "<p><strong>Ae:</strong> " + result.ae + "</p>" +
+                           "<p><strong>RPM:</strong> " + result.rpm + "</p>" +
+                           "<p><strong>Feed:</strong> " + result.feed + "</p>";
+      } else {
+        output.innerHTML = "<p>No data found for the selected combination.</p>";
+      }
+    }
+  </script>
+</body>
+</html>
